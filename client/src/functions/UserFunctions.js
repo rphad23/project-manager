@@ -9,6 +9,7 @@ export const handleSignIn = (response, setUserData, setOpenBackdrop) => {
     return userData;
   } else if (isNewUser === false) {
     if (setUserData) {
+      // pass in token
       FetchUserData(response.user.uid, setUserData, setOpenBackdrop);
     }
   } else {
