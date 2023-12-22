@@ -3,6 +3,7 @@ import {
   InviteUser,
   UpdateBoardProperty,
   RemoveUser,
+  RemoveBoard,
 } from "api/Board";
 import { CreateNewTask, ReorderTasks, SwitchTasks } from "api/Task";
 import { CreateNewList, ReorderLists } from "api/List";
@@ -244,6 +245,17 @@ const HandleRemovingUser = (boardId, userId) =>
       });
   });
 
+const HandleRemovingBoard = (boardId) =>
+  new Promise((resolve, reject) => {
+    RemoveBoard({ boardId })
+      .then((response) => {
+        response.ok ? resolve(response) : reject(response);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
 const BoardHelpers = {
   HandleUserRelatedBoards: HandleUserRelatedBoards,
   HandleBoardCreation: HandleBoardCreation,
@@ -255,6 +267,7 @@ const BoardHelpers = {
   HandleTaskSwitching: HandleTaskSwitching,
   HandleInvitingUser: HandleInvitingUser,
   HandleRemovingUser: HandleRemovingUser,
+  HandleRemovingBoard: HandleRemovingBoard,
   FindExactBoard: FindExactBoard,
 };
 

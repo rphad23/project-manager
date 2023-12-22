@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { UIContext } from "provider/UIProvider";
 import { UserContext } from "provider/UserProvider";
 import { BoardHelpers } from "helpers";
@@ -7,16 +8,18 @@ import {
   Grid,
   Typography,
   Button,
+  ButtonGroup,
   IconButton,
   Dialog,
   DialogTitle,
   DialogActions,
 } from "@material-ui/core";
+import { Delete, Close } from "@material-ui/icons";
 import { SectionTitle, EditInput, LightButton, UserAvatar } from "components";
-import { Close } from "@material-ui/icons";
 import { drawerStyles } from "./styles";
 
 const BoardDrawer = ({ board, admin }) => {
+  let history = useHistory();
   const classes = drawerStyles();
   const { drawerOpen, changeDrawerVisibility, setRenderedBoard } =
     useContext(UIContext);
@@ -26,6 +29,7 @@ const BoardDrawer = ({ board, admin }) => {
     useState(false);
   const [displayTitleEditArea, setDisplayTitleEditArea] = useState(false);
   const [displayRemoveDialog, setDisplayRemoveDialog] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -48,6 +52,19 @@ const BoardDrawer = ({ board, admin }) => {
 
   const closeRemoveDialog = () => {
     setDisplayRemoveDialog(false);
+  };
+
+  const handleBoardDelete = () => {
+    BoardHelpers.HandleRemovingBoard(board.id)
+      .then(() => {
+        const newBoards = boards.filter((current) => current.id !== board.id);
+        history.push("/boards");
+        setBoards(newBoards);
+        changeDrawerVisibility("set", false);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   const editDescription = (description) => {
@@ -422,6 +439,39 @@ const BoardDrawer = ({ board, admin }) => {
                 );
               }
             })}
+          {/* DELETE BOARD */}
+          {confirmDelete ? (
+            <Grid>
+              <Typography variant="subtitle1" component="p">
+                Are you sure?
+              </Typography>
+              <ButtonGroup>
+                <Button
+                  onClick={handleBoardDelete}
+                  className={classes.deleteButton}
+                >
+                  Yes
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={{ margin: "10px 0" }}
+                  onClick={() => setConfirmDelete(false)}
+                >
+                  No
+                </Button>
+              </ButtonGroup>
+            </Grid>
+          ) : (
+            <Button
+              variant="contained"
+              className={classes.deleteButton}
+              startIcon={<Delete />}
+              onClick={() => setConfirmDelete(true)}
+            >
+              Delete Board
+            </Button>
+          )}
         </Grid>
       )}
     </Drawer>
