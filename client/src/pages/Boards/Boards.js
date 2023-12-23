@@ -49,9 +49,17 @@ const Boards = () => {
           <Grid className={classes.boardsContainer} container spacing={3}>
             {boards !== undefined &&
               boards.length > 0 &&
-              boards.map((value, key) => {
+              boards.map((value) => {
                 return (
-                  <Grid container key={key} item lg={3} md={3} sm={4} xs={10}>
+                  <Grid
+                    container
+                    key={value.id}
+                    item
+                    lg={3}
+                    md={3}
+                    sm={4}
+                    xs={10}
+                  >
                     <div onClick={() => handleBoardClick(value.id)}>
                       <Board
                         image={value.coverPhoto}

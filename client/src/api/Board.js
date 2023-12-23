@@ -105,3 +105,20 @@ export const RemoveUser = (body) =>
       reject(err);
     }
   });
+
+export const RemoveBoard = (body) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch(process.env.REACT_APP_SERVICE_URL + "", {
+        method: "DELETE",
+        headers: new Headers({
+          "Content-type": "application/json; charset=UTF-8",
+        }),
+        body: JSON.stringify(body),
+      });
+
+      resolve(response.json());
+    } catch (err) {
+      reject(err);
+    }
+  });

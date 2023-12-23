@@ -89,6 +89,7 @@ const AssignMemberMenu = ({
                       xs={12}
                       className={classes.member}
                       onClick={() => handleMemberClick(user.uid)}
+                      key={user.uid}
                     >
                       <Grid item xs style={{ maxWidth: "32px" }}>
                         <UserAvatar user={user} styles={classes.avatar} />

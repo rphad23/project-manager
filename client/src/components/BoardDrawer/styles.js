@@ -89,6 +89,16 @@ export const drawerStyles = makeStyles(
       fontWeight: "600",
       color: "#EB5757",
     },
+    deleteButton: {
+      margin: "10px 0",
+      color: "#fff",
+      backgroundColor: "#EB5757",
+      boxShadow:
+        "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)",
+      "&:hover": {
+        backgroundColor: "#e62929",
+      },
+    },
   }),
   { index: 1 },
 );
