@@ -396,7 +396,7 @@ const BoardDrawer = ({ board, admin }) => {
                       </Grid>
                     </Grid>
                     <Grid item container xs justifyContent="center">
-                      <Grid item contaşner xs={9}>
+                      <Grid item container xs={9}>
                         <div
                           onClick={() => setDisplayRemoveDialog(true)}
                           className={classes.redButton}
