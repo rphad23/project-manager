@@ -41,20 +41,17 @@ const returnUserData = (uid) =>
   new Promise(async (resolve, reject) => {
     const ref = db.ref(`/users/${uid}`);
 
-    const whitelisted = await checkIfWhitelisted(uid);
+    const [whitelisted, snapshot] = await Promise.all([
+      checkIfWhitelisted(uid),
+      ref.once("value"),
+    ]).catch((err) => reject(err));
+
     if (!whitelisted) return reject("User not whitelisted");
 
-    const userExists = await checkIfUserExists(uid);
-    if (!userExists) return reject("User data doesn't exist!");
+    const value = snapshot.val();
 
-    ref.once("value", (snapshot) => {
-      const value = snapshot.val();
-      if (value !== undefined && value !== null) {
-        resolve(value);
-      } else {
-        reject("Couldn't resolve user data!");
-      }
-    });
+    if (value !== undefined && value !== null) resolve(value);
+    else reject("Couldn't resolve user data!");
   });
 
 const checkIfUserExists = (uid) =>
