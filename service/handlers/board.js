@@ -5,6 +5,7 @@ const {
   returnUserRelatedBoards,
   updateBoardProperty,
   removeBoardFromUser,
+  deleteBoard,
 } = require("../src/boards");
 
 module.exports.create = async (event) => {
@@ -336,3 +337,58 @@ module.exports.removeUser = async (event) => {
   });
   return promise;
 };
+
+module.exports.delete = async (event) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const { boardId, userId } = JSON.parse(event.body) || false;
+
+      if (!boardId || !userId) {
+        return reject({
+          statusCode: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": true,
+          },
+          body: JSON.stringify({
+            statusCode: 400,
+            message: "Incorrect body",
+          }),
+        });
+      }
+
+      const deletedBoard = await deleteBoard(boardId, userId);
+
+      if (!deletedBoard) throw "No response";
+
+      const response = {
+        statusCode: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
+        body: JSON.stringify({
+          statusCode: 200,
+          deletedBoard,
+        }),
+      };
+
+      resolve(response);
+    } catch (err) {
+      const response = {
+        statusCode: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
+        body: JSON.stringify({
+          statusCode: 500,
+          error: err.message || err,
+        }),
+      };
+      reject(response);
+    }
+  });
