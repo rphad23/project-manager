@@ -372,6 +372,7 @@ module.exports.delete = async (event) =>
         body: JSON.stringify({
           statusCode: 200,
           deletedBoard,
+          ok: true,
         }),
       };
 
