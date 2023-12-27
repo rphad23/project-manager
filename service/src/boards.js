@@ -216,6 +216,23 @@ const removeBoardFromUser = (boardId, userId) =>
       }
     });
   });
+
+const deleteBoard = (boardId, userId) =>
+  new Promise(async (resolve, reject) => {
+    const ref = db.ref(`/boards/${boardId}`);
+
+    ref.once("value", (snapshot) => {
+      const value = snapshot.val();
+
+      if (!value || value.admin.uid !== userId)
+        return reject("board delete failed");
+
+      ref.remove((error) => {
+        error ? reject(error) : resolve(true);
+      });
+    });
+  });
+
 module.exports = {
   createNewBoard,
   returnUserRelatedBoards,
@@ -223,4 +240,5 @@ module.exports = {
   inviteUser,
   updateBoardProperty,
   removeBoardFromUser,
+  deleteBoard,
 };
