@@ -53,6 +53,13 @@ functions:
           path: board
           method: put
           cors: true
+  removeBoard:
+    handler: handlers/board.delete
+    events:
+      - http:
+          path: board
+          method: delete
+          cors: true
   removeUser:
     handler: handlers/board.removeUser
     events:
