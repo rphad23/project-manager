@@ -231,7 +231,7 @@ module.exports.users = async (event) => {
 
 module.exports.boards = async (event) => {
   const promise = new Promise(async (resolve, reject) => {
-    const boardList = JSON.parse(event.body).boardList;
+    const boardList = JSON.parse(event.body)?.boardList || false;
     if (boardList !== undefined && boardList.length > 0) {
       const boardData = await returnUserRelatedBoards(boardList);
       try {
