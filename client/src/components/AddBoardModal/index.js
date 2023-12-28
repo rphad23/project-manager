@@ -27,6 +27,7 @@ const AddBoardModal = ({ open, setOpen }) => {
   const [openVisibility, setOpenVisibilty] = useState(false);
 
   const [coverAnchorEl, setCoverAnchorEl] = useState(null);
+  const [showCoverMenu, setShowCoverMenu] = useState(false);
 
   const [boardTitle, setBoardTitle] = useState("");
   const [boardVisibility, setBoardVisibility] = useState("Private");
@@ -105,10 +106,12 @@ const AddBoardModal = ({ open, setOpen }) => {
 
   const handleCoverClick = (event) => {
     setCoverAnchorEl(event.currentTarget);
+    setShowCoverMenu(true);
   };
 
   const handleCoverClose = () => {
     setCoverAnchorEl(null);
+    setShowCoverMenu(false);
   };
 
   const handleImageClick = (regular, raw) => {
@@ -163,6 +166,7 @@ const AddBoardModal = ({ open, setOpen }) => {
               placeholder="Add board title"
               type="text"
               className={classes.input}
+              autoFocus
             />
           </Grid>
           <Grid
@@ -181,12 +185,14 @@ const AddBoardModal = ({ open, setOpen }) => {
                 <Image className={classes.icons} />
                 <Typography className={classes.buttonText}>Cover</Typography>
               </IconButton>
-              <CoverMenu
-                handleImageClick={handleImageClick}
-                open={openVisibility}
-                anchorEl={coverAnchorEl}
-                handleClose={handleCoverClose}
-              />
+              {showCoverMenu && (
+                <CoverMenu
+                  handleImageClick={handleImageClick}
+                  open={openVisibility}
+                  anchorEl={coverAnchorEl}
+                  handleClose={handleCoverClose}
+                />
+              )}
             </Grid>
             <Grid item xs={6}>
               <IconButton

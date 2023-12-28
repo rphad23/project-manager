@@ -67,6 +67,7 @@ const KeywordSearch = ({
             type="text"
             onKeyDown={(e) => e.stopPropagation()}
             className={classes.input}
+            autoFocus
           />
         </Grid>
         <Grid
