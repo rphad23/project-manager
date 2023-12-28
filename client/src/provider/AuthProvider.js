@@ -58,6 +58,7 @@ const AuthProvider = ({
         inputs,
         setInputs,
         errors,
+        setErrors,
         token,
       }}
     >

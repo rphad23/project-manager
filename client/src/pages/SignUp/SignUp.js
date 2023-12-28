@@ -9,7 +9,8 @@ import { Container, CssBaseline, Snackbar } from "@material-ui/core";
 const SignUp = () => {
   const classes = loginStyles(AuthTheme);
   const history = useHistory();
-  const { handleSignUp, setInputs, errors, token } = useContext(FirebaseAuth);
+  const { handleSignUp, setInputs, errors, setErrors, token } =
+    useContext(FirebaseAuth);
 
   const [alertOpen, setAlertOpen] = useState(false);
   const [alert, setAlert] = useState("");
@@ -47,10 +48,9 @@ const SignUp = () => {
   };
 
   const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
+    if (reason === "clickaway") return;
 
+    setErrors((prev) => prev.slice(0, -1));
     setAlertOpen(false);
   };
 
