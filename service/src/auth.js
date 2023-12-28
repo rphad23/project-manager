@@ -25,8 +25,13 @@ const createNewUser = (uid, email, name, picture) =>
     };
 
     if (userExists) reject("User already exists!");
-    else if (!whitelisted) reject("Email is not whitelisted");
-    else {
+    else if (!whitelisted) {
+      adminAuth
+        .deleteUser(uid)
+        .then((userRecord) => console.log("Successfully deleted user"))
+        .catch((err) => console.log(err));
+      reject("Email is not whitelisted");
+    } else {
       ref.set(data, (error) => {
         if (error) {
           reject(error);
@@ -41,13 +46,7 @@ const returnUserData = (uid) =>
   new Promise(async (resolve, reject) => {
     const ref = db.ref(`/users/${uid}`);
 
-    const [whitelisted, snapshot] = await Promise.all([
-      checkIfWhitelisted(uid),
-      ref.once("value"),
-    ]).catch((err) => reject(err));
-
-    if (!whitelisted) return reject("User not whitelisted");
-
+    const snapshot = await ref.once("value").catch((err) => reject(err));
     const value = snapshot.val();
 
     if (value !== undefined && value !== null) resolve(value);
@@ -76,14 +75,8 @@ const checkIfWhitelisted = (uid) =>
 
     ref.once("value", async (snapshot) => {
       const user = await adminAuth.getUser(uid);
-      if (user && !snapshot.val().includes(user.email)) {
-        adminAuth
-          .deleteUser(uid)
-          .then((userRecord) => console.log("Successfully deleted user"))
-          .catch((err) => console.log(err));
-
-        resolve(false);
-      } else resolve(true);
+      if (user && !snapshot.val().includes(user.email)) resolve(false);
+      else resolve(true);
     });
   });
 
