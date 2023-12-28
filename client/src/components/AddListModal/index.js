@@ -47,6 +47,7 @@ const AddElementModal = ({ anchorEl, handleClose, createNewList }) => {
             margin="dense"
             helperText={error && error}
             value={nameInput}
+            onKeyDown={(e) => e.stopPropagation()}
           />
         </Grid>
         <Grid
