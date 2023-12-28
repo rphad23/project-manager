@@ -440,38 +440,42 @@ const BoardDrawer = ({ board, admin }) => {
               }
             })}
           {/* DELETE BOARD */}
-          {confirmDelete ? (
-            <Grid>
-              <Typography variant="subtitle1" component="p">
-                Are you sure?
-              </Typography>
-              <ButtonGroup>
-                <Button
-                  onClick={handleBoardDelete}
-                  className={classes.deleteButton}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{ margin: "10px 0" }}
-                  onClick={() => setConfirmDelete(false)}
-                >
-                  No
-                </Button>
-              </ButtonGroup>
-            </Grid>
-          ) : (
-            <Button
-              variant="contained"
-              className={classes.deleteButton}
-              startIcon={<Delete />}
-              onClick={() => setConfirmDelete(true)}
-            >
-              Delete Board
-            </Button>
-          )}
+          {admin ? (
+            confirmDelete ? (
+              <Grid>
+                <Typography variant="subtitle1" component="p">
+                  Are you sure?
+                </Typography>
+                <ButtonGroup>
+                  <Button
+                    onClick={deleteBoard}
+                    className={classes.deleteButton}
+                    variant="contained"
+                    color="secondary"
+                  >
+                    Yes
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    style={{ margin: "10px 0" }}
+                    onClick={() => setConfirmDelete(false)}
+                  >
+                    No
+                  </Button>
+                </ButtonGroup>
+              </Grid>
+            ) : (
+              <Button
+                variant="contained"
+                className={classes.deleteButton}
+                startIcon={<Delete />}
+                onClick={() => setConfirmDelete(true)}
+              >
+                Delete Board
+              </Button>
+            )
+          ) : null}
         </Grid>
       )}
     </Drawer>
