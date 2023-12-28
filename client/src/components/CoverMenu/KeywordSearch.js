@@ -56,6 +56,11 @@ const KeywordSearch = ({
     }
   };
 
+  const handleKeyDown = (e) => {
+    e.stopPropagation();
+    if (e.key === "Enter") handleSearch();
+  };
+
   return (
     <div>
       <Grid className={classes.container} container>
@@ -65,7 +70,7 @@ const KeywordSearch = ({
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Keywords..."
             type="text"
-            onKeyDown={(e) => e.stopPropagation()}
+            onKeyDown={handleKeyDown}
             className={classes.input}
             autoFocus
           />
