@@ -21,9 +21,13 @@ import { drawerStyles } from "./styles";
 const BoardDrawer = ({ board, admin }) => {
   let history = useHistory();
   const classes = drawerStyles();
-  const { drawerOpen, changeDrawerVisibility, setRenderedBoard } =
-    useContext(UIContext);
-  const { boards, setBoards } = useContext(UserContext);
+  const {
+    drawerOpen,
+    changeDrawerVisibility,
+    setRenderedBoard,
+    setOpenBackdrop,
+  } = useContext(UIContext);
+  const { userData, boards, setBoards } = useContext(UserContext);
 
   const [displayDescriptionEditArea, setDisplayDescriptionEditArea] =
     useState(false);
@@ -52,19 +56,6 @@ const BoardDrawer = ({ board, admin }) => {
 
   const closeRemoveDialog = () => {
     setDisplayRemoveDialog(false);
-  };
-
-  const handleBoardDelete = () => {
-    BoardHelpers.HandleRemovingBoard(board.id)
-      .then(() => {
-        const newBoards = boards.filter((current) => current.id !== board.id);
-        history.push("/boards");
-        setBoards(newBoards);
-        changeDrawerVisibility("set", false);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
   };
 
   const editDescription = (description) => {
@@ -101,25 +92,44 @@ const BoardDrawer = ({ board, admin }) => {
   const removeUser = (user) => {
     const uid = user.uid;
     const users = board.users.filter((user) => user.uid !== uid);
-    const userData = board.userData.filter((user) => user.uid !== uid);
+    const filteredUserData = board.userData.filter((user) => user.uid !== uid);
 
     setRenderedBoard({
       ...board,
       users: users,
-      userData: userData,
+      userData: filteredUserData,
     });
     BoardHelpers.HandleBoardPropertyUpdate(board.id, "users", users).then(
       () => {
         for (let i = 0; i < boards.length; i++) {
           if (boards[i].id === board.id) {
             boards[i].users = users;
-            boards[i].userData = userData;
+            boards[i].userData = filteredUserData;
             setBoards(boards);
           }
         }
       },
     );
     BoardHelpers.HandleRemovingUser(board.id, uid);
+  };
+
+  const deleteBoard = async () => {
+    if (!admin) return;
+    setOpenBackdrop(true);
+
+    // deletes the board and removes board from each user
+    await Promise.all([
+      BoardHelpers.HandleRemovingBoard(board.id, userData.uid),
+      ...board.users.map((currentUser) =>
+        BoardHelpers.HandleRemovingUser(board.id, currentUser.uid),
+      ),
+    ]).catch((err) => console.error(err));
+
+    const newBoards = boards.filter((current) => current.id !== board.id);
+    history.push("/boards");
+    setBoards(newBoards);
+    setOpenBackdrop(false);
+    changeDrawerVisibility("set", false);
   };
 
   return (
@@ -440,38 +450,42 @@ const BoardDrawer = ({ board, admin }) => {
               }
             })}
           {/* DELETE BOARD */}
-          {confirmDelete ? (
-            <Grid>
-              <Typography variant="subtitle1" component="p">
-                Are you sure?
-              </Typography>
-              <ButtonGroup>
-                <Button
-                  onClick={handleBoardDelete}
-                  className={classes.deleteButton}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{ margin: "10px 0" }}
-                  onClick={() => setConfirmDelete(false)}
-                >
-                  No
-                </Button>
-              </ButtonGroup>
-            </Grid>
-          ) : (
-            <Button
-              variant="contained"
-              className={classes.deleteButton}
-              startIcon={<Delete />}
-              onClick={() => setConfirmDelete(true)}
-            >
-              Delete Board
-            </Button>
-          )}
+          {admin ? (
+            confirmDelete ? (
+              <Grid>
+                <Typography variant="subtitle1" component="p">
+                  Are you sure?
+                </Typography>
+                <ButtonGroup>
+                  <Button
+                    onClick={deleteBoard}
+                    className={classes.deleteButton}
+                    variant="contained"
+                    color="secondary"
+                  >
+                    Yes
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    style={{ margin: "10px 0" }}
+                    onClick={() => setConfirmDelete(false)}
+                  >
+                    No
+                  </Button>
+                </ButtonGroup>
+              </Grid>
+            ) : (
+              <Button
+                variant="contained"
+                className={classes.deleteButton}
+                startIcon={<Delete />}
+                onClick={() => setConfirmDelete(true)}
+              >
+                Delete Board
+              </Button>
+            )
+          ) : null}
         </Grid>
       )}
     </Drawer>

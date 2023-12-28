@@ -75,30 +75,17 @@ const linkUsersAndBoard = (users, boardId) =>
 const returnUserRelatedBoards = (boards) =>
   new Promise(async (resolve, reject) => {
     try {
-      const response = new Promise((resolve, reject) => {
-        const data = [];
-
-        boards.forEach((val, index) => {
+      const response = Promise.all(
+        boards.map(async (val) => {
           // val here should be unique id of a board
           const ref = db.ref(`/boards/${val}`);
-          ref.once("value", (snapshot) => {
-            const value = snapshot.val();
-            if (value !== undefined && value !== null) {
-              returnBoardRelatedUsers(value.users) // we are also returning users' data related to board
-                .then((response) => {
-                  value.userData = response;
-                  data.push(value);
-                })
-                .then(() => {
-                  // resolve promise if iterating last item of array
-                  if (index === boards.length - 1) resolve(data);
-                });
-            } else {
-              if (index === boards.length - 1) resolve(data);
-            }
-          });
-        });
-      });
+          const userBoard = (await ref.once("value")).val();
+          // we are also returning users' data related to board
+          const users = await returnBoardRelatedUsers(userBoard.users);
+          userBoard.userData = users;
+          return userBoard;
+        }),
+      );
 
       resolve(await response);
     } catch (err) {
@@ -216,6 +203,23 @@ const removeBoardFromUser = (boardId, userId) =>
       }
     });
   });
+
+const deleteBoard = (boardId, userId) =>
+  new Promise(async (resolve, reject) => {
+    const ref = db.ref(`/boards/${boardId}`);
+
+    ref.once("value", (snapshot) => {
+      const value = snapshot.val();
+
+      if (!value || value.admin.uid !== userId)
+        return reject("board delete failed");
+
+      ref.remove((error) => {
+        error ? reject(error) : resolve(true);
+      });
+    });
+  });
+
 module.exports = {
   createNewBoard,
   returnUserRelatedBoards,
@@ -223,4 +227,5 @@ module.exports = {
   inviteUser,
   updateBoardProperty,
   removeBoardFromUser,
+  deleteBoard,
 };

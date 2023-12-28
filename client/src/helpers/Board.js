@@ -234,6 +234,7 @@ const HandleBoardPropertyUpdate = (boardId, property, data) =>
     }
   });
 
+// removes board from user data
 const HandleRemovingUser = (boardId, userId) =>
   new Promise((resolve, reject) => {
     RemoveUser({ boardId: boardId, userId: userId })
@@ -245,9 +246,9 @@ const HandleRemovingUser = (boardId, userId) =>
       });
   });
 
-const HandleRemovingBoard = (boardId) =>
+const HandleRemovingBoard = (boardId, userId) =>
   new Promise((resolve, reject) => {
-    RemoveBoard({ boardId })
+    RemoveBoard({ boardId, userId })
       .then((response) => {
         response.ok ? resolve(response) : reject(response);
       })
